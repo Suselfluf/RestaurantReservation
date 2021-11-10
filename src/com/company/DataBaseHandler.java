@@ -1,0 +1,69 @@
+package com.company;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.ResultSet;
+
+public class DataBaseHandler {
+
+    protected static String DRIVER = "com.mysql.cj.jdbc.Driver";
+    protected static String DATABASEURL = "jdbc:mysql://localhost:3306/RestaurantDB";
+    protected static String USERNAME = "root";
+    protected static String PASSWORD = "dl1526ld";
+
+    public static void main(String[] args) {
+	// write your code here
+
+        getConnection();
+    }
+
+    public static Connection getConnection() {
+        try{
+
+            Class.forName(DRIVER);
+            Connection conn = DriverManager.getConnection(DATABASEURL, USERNAME, PASSWORD);
+            System.out.println("DatabaseConnected");
+            return conn;
+        }
+        catch (Exception e){
+            System.out.println(e);
+        }
+        return null;
+    }
+
+    public void signUpVisitors(String reservationId, Integer num_of_tables, String date_of_reserv, Integer number_of_visitors){
+        String userReservation = "INSERT INTO Reservation values (?,?,?,?)";    /// values (?,?,?,?) чтобы потом задать в prepareStatemnt
+        System.out.println("signUpVisitoirs has been awoken");
+        try {
+            PreparedStatement prSt = getConnection().prepareStatement(userReservation);
+            prSt.setString(1, reservationId); //Обозначаем какая из переменных в массиве параметров чем являкется
+            prSt.setInt(2, num_of_tables);
+            prSt.setString(3, date_of_reserv);
+            prSt.setInt(4, number_of_visitors);
+
+            prSt.executeUpdate(); // Running query for adding infomation
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
+    public ResultSet getReservation(){
+        ResultSet resSet = null;
+
+
+
+        String select = "SELECT * FROM Reservation";
+
+        try {
+            PreparedStatement prSt = getConnection().prepareStatement(select);
+
+            resSet = prSt.executeQuery();    // Running query for getting information
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return resSet;
+    }
+}

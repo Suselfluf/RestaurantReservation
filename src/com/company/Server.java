@@ -45,17 +45,6 @@ class Server {
         AtomicReference<Integer> users = new AtomicReference<>(0); // Value of users
 
 
-        public class Cat {
-
-            public String name; // имя
-            public int age; // возраст
-
-            // Конструктор
-            public Cat(){
-
-            }
-        }
-
 
         @Override
         public void handle(HttpExchange exchange) throws IOException { //HttpExchange - learn about that class
@@ -111,21 +100,12 @@ class Server {
 
             byte[] byteArrray = resArray.getBytes();
 
-//            System.out.println(byteArrray);
-//            System.out.println(byteArrray2);
 
 
             exchange.sendResponseHeaders(200, byteArrray.length);
 
             output.write(byteArrray);
 
-
-
-
-
-
-//            byte[] data = SerializationUtils.serialize((Serializable) murzik); // New libray to parce object to bytes
-//            System.out.println(data);
 
 
 

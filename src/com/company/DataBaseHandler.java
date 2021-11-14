@@ -49,11 +49,9 @@ public class DataBaseHandler {
         }
 
     }
+
     public ResultSet getReservation(){
         ResultSet resSet = null;
-
-
-
         String select = "SELECT * FROM Reservation";
 
         try {
@@ -66,4 +64,21 @@ public class DataBaseHandler {
 
         return resSet;
     }
+
+
+    public ResultSet reservationDependsOnDate(String inputDate){
+        ResultSet resSet = null;
+        String select = "SELECT * FROM Reservation WHERE date_of_reserv like ?";
+
+        try{
+            PreparedStatement prSt = getConnection().prepareStatement(select);
+            prSt.setString(1, inputDate);
+            resSet = prSt.executeQuery();
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+        return resSet;
+    }
+
+
 }

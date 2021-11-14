@@ -38,6 +38,8 @@ class Server {
 
         server.createContext("/api/inc", new MyHandler());
 
+        server.createContext("/api/getReservs", new ReservationHandler());
+
 
     }
 
@@ -51,7 +53,7 @@ class Server {
 
             System.out.println("\n------------------");
 
-            exchange.getResponseHeaders().set("Content-type", "application/json");
+            exchange.getResponseHeaders().set("Content-type", "text/plain");  // text/plain application/json
 
             GsonBuilder builder = new GsonBuilder();  //GSON json converter library
             Gson gson = builder.create();
@@ -68,15 +70,18 @@ class Server {
 //            dbHandler.signUpVisitors("RV-02", 2, "2021-07-21 22:00:00", 2);  //Insert data
 
 
-            byte[] inputData = input.readAllBytes();
-            System.out.println(new String(inputData));
+            byte[] inputData = input.readAllBytes();            // Destructure input line to make it splitted strings
+            String inputLine = new String(inputData);           // Destructure input line to make it splitted strings
+            System.out.println(inputLine);
+
+//            String jsonString = gson.toJson(inputLine);          // Destructure input line to make it splitted strings
+//            System.out.println(jsonString);
 
 
             List<Object> respArray = new ArrayList<Object>();
 
             try{
                 ResultSet rs = dbHandler.getReservation();  // Getting respond from DB query
-
                 while (rs.next()) {
                     String reservationId = rs.getString("reservationId");       //Getting Id
                     int num_of_tables = rs.getInt("num_of_tables");             //Getting Table's nubmer
@@ -91,12 +96,7 @@ class Server {
                 System.out.println(e);
             }
 
-
-
-            System.out.println(respArray.getClass().getSimpleName());
-
             String resArray = gson.toJson(respArray);
-            System.out.println(resArray);
 
             byte[] byteArrray = resArray.getBytes();
 
@@ -107,7 +107,62 @@ class Server {
             output.write(byteArrray);
 
 
+            output.flush();
+            exchange.close();
 
+        }
+    }
+
+    static class ReservationHandler implements HttpHandler {                           // Handler for Displaying reserved time on fixed date
+
+
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+
+            System.out.println("\n-------ReservationHandler-----------");
+
+            exchange.getResponseHeaders().set("Content-type", "text/plain");  // text/plain application/json
+
+            GsonBuilder builder = new GsonBuilder();  //GSON json converter library
+            Gson gson = builder.create();
+
+            OutputStream output = exchange.getResponseBody();
+            InputStream input = exchange.getRequestBody(); //getting input stream
+
+
+            DataBaseHandler dbHandler = new DataBaseHandler();
+
+
+            byte[] inputData = input.readAllBytes();            // Destructure input line to make it splitted strings
+            String inputLine = new String(inputData);           // Destructure input line to make it splitted strings
+            System.out.println(inputLine);
+//            dbHandler.signUpVisitors("RV-03", 2, "2021-7-24 21:00:00", 2);  //Insert data
+
+
+            List<Object> respArray = new ArrayList<Object>();
+
+            try{                                                                    // Listing output from DB
+                ResultSet rs = dbHandler.reservationDependsOnDate(inputLine + '%');  // Getting respond from DB query
+                while (rs.next()) {
+                    String reservationId = rs.getString("reservationId");       //Getting Id
+                    int num_of_tables = rs.getInt("num_of_tables");             //Getting Table's nubmer
+                    Timestamp date_of_reserv = rs.getTimestamp("date_of_reserv");         //Getting Date of reservation
+                    int number_of_visitors = rs.getInt("number_of_visitors");   //Getting number of visitors
+                    reservationResponse resResp = new reservationResponse(reservationId, num_of_tables, date_of_reserv, number_of_visitors);
+                    respArray.add(resResp);
+                }
+            }catch (SQLException e){
+                System.out.println(e);
+            }
+
+            String resArray = gson.toJson(respArray);
+
+            byte[] byteArrray = resArray.getBytes();
+
+
+            exchange.sendResponseHeaders(200, byteArrray.length);
+
+            output.write(byteArrray);
 
 
             output.flush();

@@ -5,6 +5,7 @@ import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -70,23 +71,23 @@ class Server {
 //            dbHandler.signUpVisitors("RV-02", 2, "2021-07-21 22:00:00", 2);  //Insert data
 
 
-            byte[] inputData = input.readAllBytes();            // Destructure input line to make it splitted strings
-            String inputLine = new String(inputData);           // Destructure input line to make it splitted strings
+            byte[] inputData = input.readAllBytes();                                                  // Destructure input line to make it splitted strings
+            String inputLine = new String(inputData);                                                 // Destructure input line to make it splitted strings
             System.out.println(inputLine);
 
-//            String jsonString = gson.toJson(inputLine);          // Destructure input line to make it splitted strings
+//            String jsonString = gson.toJson(inputLine);                                             // Destructure input line to make it splitted strings
 //            System.out.println(jsonString);
 
 
             List<Object> respArray = new ArrayList<Object>();
 
             try{
-                ResultSet rs = dbHandler.getReservation();  // Getting respond from DB query
+                ResultSet rs = dbHandler.getReservation();                                             // Getting respond from DB query
                 while (rs.next()) {
-                    String reservationId = rs.getString("reservationId");       //Getting Id
-                    int num_of_tables = rs.getInt("num_of_tables");             //Getting Table's nubmer
-                    Timestamp date_of_reserv = rs.getTimestamp("date_of_reserv");         //Getting Date of reservation
-                    int number_of_visitors = rs.getInt("number_of_visitors");   //Getting number of visitors
+                    String reservationId = rs.getString("reservationId");                   //Getting Id
+                    int num_of_tables = rs.getInt("num_of_tables");                         //Getting Table's nubmer
+                    Timestamp date_of_reserv = rs.getTimestamp("date_of_reserv");           //Getting Date of reservation
+                    int number_of_visitors = rs.getInt("number_of_visitors");               //Getting number of visitors
 //                    System.out.println(reservationId + ", " + num_of_tables + ", " + date_of_reserv +
 //                            ", " + number_of_visitors);
                     reservationResponse resResp = new reservationResponse(reservationId, num_of_tables, date_of_reserv, number_of_visitors);

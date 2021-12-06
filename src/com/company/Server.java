@@ -68,7 +68,7 @@ class Server {
 
 
             DataBaseHandler dbHandler = new DataBaseHandler();
-//            dbHandler.signUpVisitors("RV-02", 2, "2021-07-21 22:00:00", 2);  //Insert data
+            //dbHandler.signUpVisitors("RV-06", 2, "2021-12-22 12:00:00", 2);  //Insert data
 
 
             byte[] inputData = input.readAllBytes();                                                  // Destructure input line to make it splitted strings
@@ -147,7 +147,7 @@ class Server {
                 while (rs.next()) {
                     String reservationId = rs.getString("reservationId");       //Getting Id
                     int num_of_tables = rs.getInt("num_of_tables");             //Getting Table's nubmer
-                    Timestamp date_of_reserv = rs.getTimestamp("date_of_reserv");         //Getting Date of reservation
+                    Timestamp date_of_reserv = rs.getTimestamp("date_of_reserv");//Getting Date of reservation
                     int number_of_visitors = rs.getInt("number_of_visitors");   //Getting number of visitors
                     reservationResponse resResp = new reservationResponse(reservationId, num_of_tables, date_of_reserv, number_of_visitors);
                     respArray.add(resResp);
@@ -157,6 +157,7 @@ class Server {
             }
 
             String resArray = gson.toJson(respArray);
+
 
             byte[] byteArrray = resArray.getBytes();
 

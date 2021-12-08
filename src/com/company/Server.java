@@ -41,6 +41,10 @@ class Server {
 
         server.createContext("/api/getReservs", new ReservationHandler());
 
+        server.createContext("/api/reservDepsOnTable", new ReservationDepsOnTable());
+
+        server.createContext("/api/bookTable", new BookingTable());
+
 
     }
 
@@ -137,7 +141,7 @@ class Server {
             byte[] inputData = input.readAllBytes();            // Destructure input line to make it splitted strings
             String inputLine = new String(inputData);           // Destructure input line to make it splitted strings
             System.out.println(inputLine);
-//            dbHandler.signUpVisitors("RV-03", 2, "2021-7-24 21:00:00", 2);  //Insert data
+
 
 
             List<Object> respArray = new ArrayList<Object>();
@@ -157,6 +161,115 @@ class Server {
             }
 
             String resArray = gson.toJson(respArray);
+
+
+            byte[] byteArrray = resArray.getBytes();
+
+
+            exchange.sendResponseHeaders(200, byteArrray.length);
+
+            output.write(byteArrray);
+
+
+            output.flush();
+            exchange.close();
+
+        }
+    }
+
+    static class ReservationDepsOnTable implements HttpHandler {                           // Handler for Displaying reserved time on fixed date
+
+
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+
+            System.out.println("\n-------ReservationDepsOnTable-----------");
+
+            exchange.getResponseHeaders().set("Content-type", "text/plain");  // text/plain application/json
+
+            GsonBuilder builder = new GsonBuilder();  //GSON json converter library
+            Gson gson = builder.create();
+
+            OutputStream output = exchange.getResponseBody();
+            InputStream input = exchange.getRequestBody(); //getting input stream
+
+
+            DataBaseHandler dbHandler = new DataBaseHandler();
+
+
+            byte[] inputData = input.readAllBytes();
+            String inputLine = new String(inputData);
+            System.out.println(inputLine);
+            String[] words = inputLine.split(" ");
+            String date = words[0];
+            String tableNum = words[1];
+
+            List<Object> respArray = new ArrayList<Object>();
+
+            try{                                                                    // Listing output from DB
+                ResultSet rs = dbHandler.getResvsDepsOnTable(date + "%", tableNum);  // Getting respond from DB query
+                while (rs.next()) {
+                    String reservationId = rs.getString("reservationId");       //Getting Id
+                    int num_of_tables = rs.getInt("num_of_tables");             //Getting Table's nubmer
+                    Timestamp date_of_reserv = rs.getTimestamp("date_of_reserv");//Getting Date of reservation
+                    int number_of_visitors = rs.getInt("number_of_visitors");   //Getting number of visitors
+                    reservationResponse resResp = new reservationResponse(reservationId, num_of_tables, date_of_reserv, number_of_visitors);
+                    respArray.add(resResp);
+                }
+            }catch (SQLException e){
+                System.out.println(e);
+            }
+
+            String resArray = gson.toJson(respArray);
+
+
+            byte[] byteArrray = resArray.getBytes();
+
+
+            exchange.sendResponseHeaders(200, byteArrray.length);
+
+            output.write(byteArrray);
+
+
+            output.flush();
+            exchange.close();
+
+        }
+    }
+
+    static class BookingTable implements HttpHandler {                           // Handler for Displaying reserved time on fixed date
+
+
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+
+            System.out.println("\n-------BookingTable-----------");
+
+            exchange.getResponseHeaders().set("Content-type", "text/plain");  // text/plain application/json
+
+            GsonBuilder builder = new GsonBuilder();  //GSON json converter library
+            Gson gson = builder.create();
+
+            OutputStream output = exchange.getResponseBody();
+            InputStream input = exchange.getRequestBody(); //getting input stream
+
+
+            DataBaseHandler dbHandler = new DataBaseHandler();
+
+
+            byte[] inputData = input.readAllBytes();
+            String inputLine = new String(inputData);
+            System.out.println(inputLine);
+            String[] words = inputLine.split(" ");
+            String date = words[0];
+            String tableNum = words[1];
+
+            List<Object> respArray = new ArrayList<Object>();
+
+            //dbHandler.signUpVisitors("RV-06", 2, "2021-12-22 12:00:00", 2);
+
+
+            String resArray = gson.toJson("You have reserved your place");
 
 
             byte[] byteArrray = resArray.getBytes();

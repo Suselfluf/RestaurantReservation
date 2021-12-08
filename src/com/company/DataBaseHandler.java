@@ -33,26 +33,26 @@ public class DataBaseHandler {
         return null;
     }
 
-    public void signUpVisitors(String reservationId, Integer num_of_tables, String date_of_reserv, Integer number_of_visitors){
-        String userReservation = "INSERT INTO Reservation values (?,?,?,?)";    /// values (?,?,?,?) чтобы потом задать в prepareStatemnt
-        System.out.println("signUpVisitoirs has been awoken");
-        try {
-            PreparedStatement prSt = getConnection().prepareStatement(userReservation);
-            prSt.setString(1, reservationId); //Обозначаем какая из переменных в массиве параметров чем являкется
-            prSt.setInt(2, num_of_tables);
-            prSt.setString(3, date_of_reserv);
-            prSt.setInt(4, number_of_visitors);
-
-            prSt.executeUpdate(); // Running query for adding infomation
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-    }
+//    public void signUpVisitors( String date_of_reserv, Integer num_of_tables, Integer number_of_visitors){         // Переделать!!!! на входе 3 параметра айди сделал автоувеличивающимся
+//        String userReservation = "INSERT INTO Booking values (?,?,?,?)";    /// values (?,?,?,?) чтобы потом задать в prepareStatemnt
+//        System.out.println("signUpVisitoirs has been awoken");                                                      //  Example insert into booking (num_of_tables, date_of_reserv, number_of_visitors) values("2","2021-12-22 15:00:00", 1);
+//        try {
+//            PreparedStatement prSt = getConnection().prepareStatement(userReservation);
+//            prSt.setString(1, reservationId); //Обозначаем какая из переменных в массиве параметров чем являкется
+//            prSt.setInt(2, num_of_tables);
+//            prSt.setString(3, date_of_reserv);
+//            prSt.setInt(4, number_of_visitors);
+//
+//            prSt.executeUpdate(); // Running query for adding infomation
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//
+//    }
 
     public ResultSet getReservation(){
         ResultSet resSet = null;
-        String select = "SELECT * FROM Reservation";
+        String select = "SELECT * FROM Booking";
 
         try {
             PreparedStatement prSt = getConnection().prepareStatement(select);
@@ -68,11 +68,27 @@ public class DataBaseHandler {
 
     public ResultSet reservationDependsOnDate(String inputDate){
         ResultSet resSet = null;
-        String select = "SELECT * FROM Reservation WHERE date_of_reserv like ?";
+        String select = "SELECT * FROM Booking WHERE date_of_reserv like ?";
 
         try{
             PreparedStatement prSt = getConnection().prepareStatement(select);
             prSt.setString(1, inputDate);
+            resSet = prSt.executeQuery();
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+        return resSet;
+    }
+
+
+    public ResultSet getResvsDepsOnTable(String date, String tableNum){
+        ResultSet resSet = null;
+        String select = "SELECT * FROM Booking WHERE num_of_tables like ? AND date_of_reserv like ?";
+
+        try{
+            PreparedStatement prSt = getConnection().prepareStatement(select);
+            prSt.setString(1, tableNum);
+            prSt.setString(2,date);
             resSet = prSt.executeQuery();
         } catch (SQLException e){
             e.printStackTrace();

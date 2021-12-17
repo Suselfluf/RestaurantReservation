@@ -260,13 +260,15 @@ class Server {
             byte[] inputData = input.readAllBytes();
             String inputLine = new String(inputData);
             System.out.println(inputLine);
-            String[] words = inputLine.split(" ");
-            String date = words[0];
-            String tableNum = words[1];
+            String[] words = inputLine.split("/");
+//            System.out.println("Converting");
+//            String date = words[0];
+////            System.out.println("Date: " + date + " tableNum: " + tableNum + " numOfVisiors" + numOfVisitors);
+//            Integer tableNumInt = Integer.valueOf(words[1]);
+//            Integer numOfVisitorsInt = Integer.valueOf(words[2]);
 
-            List<Object> respArray = new ArrayList<Object>();
 
-            //dbHandler.signUpVisitors("RV-06", 2, "2021-12-22 12:00:00", 2);
+            dbHandler.signUpVisitors(words[0], Integer.valueOf(words[1]), Integer.valueOf(words[2]));
 
 
             String resArray = gson.toJson("You have reserved your place");
